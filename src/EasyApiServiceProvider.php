@@ -12,6 +12,22 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class EasyApiServiceProvider extends PackageServiceProvider
 {
+	/**
+	 * Cached domain patterns for better performance
+	 */
+	private static array $domainPatterns = [
+		'api' => '[a-zA-Z0-9.-]+',
+		'web' => '(?!api\.)[a-zA-Z0-9.-]+',
+	];
+
+	/**
+	 * Cached middleware arrays for better performance
+	 */
+	private static array $middlewareGroups = [
+		'api' => [EasyApiMiddleware::class],
+		'web' => ['web'],
+	];
+
 	public function configurePackage(Package $package): void
 	{
 		/*
@@ -34,43 +50,40 @@ class EasyApiServiceProvider extends PackageServiceProvider
 	{
 		parent::boot();
 
-		// Load migrations
-		$this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+		// Load migrations only in console (optimization)
+		if (app()->runningInConsole())
+		{
+			$this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
-		// Publish migrations
-		$this->publishes([
-			__DIR__ . '/../database/migrations' => database_path('migrations'),
-		], 'migrations');
+			// Publish migrations only in console (optimization)
+			$this->publishes([
+				__DIR__ . '/../database/migrations' => database_path('migrations'),
+			], 'migrations');
+		}
 
-		// Register routes
+		// Register routes - always register both with different strategies
 		RouteServiceProvider::loadRoutesUsing(function ()
 		{
-			collect($this->getRoutesToLoad())
-				->each(fn($route) => $this->{(string) $route}());
+			$this->api();
+			$this->web();
 		});
-	}
-
-	protected function getRoutesToLoad(): array
-	{
-		return match (true)
-		{
-			app()->runningInConsole() => ['api', 'web'],
-			Str::startsWith(request()->host(), 'api.') => ['api'],
-			default => ['web']
-		};
 	}
 
 	protected function api(): void
 	{
-		Route::middleware(EasyApiMiddleware::class)
+		Route::middleware(self::$middlewareGroups['api'])
 			->withoutMiddleware('web')
+			->domain('api.{domain}')
+			->where(['domain' => self::$domainPatterns['api']])
 			->name('api.')
 			->group(base_path('routes/api.php'));
 	}
 
 	protected function web(): void
 	{
-		Route::middleware('web')
+		Route::middleware(self::$middlewareGroups['web'])
+			->domain('{domain}')
+			->where(['domain' => self::$domainPatterns['web']])
 			->group(base_path('routes/web.php'));
 	}
 
