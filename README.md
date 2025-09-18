@@ -30,7 +30,7 @@ composer require rdcstarr/laravel-easyapi
 Publish the migrations (optional) and migrate:
 
 ```bash
-php artisan vendor:publish --provider="Rdcstarr\EasyApi\EasyApiServiceProvider" --tag="migrations"
+php artisan vendor:publish --provider="Rdcstarr\EasyApi\EasyApiServiceProvider"
 php artisan migrate
 ```
 
