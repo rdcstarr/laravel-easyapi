@@ -82,6 +82,7 @@ The package exposes a single console command: `php artisan easyapi` with the fol
 - list — display stored API keys (masked) with access counts
 - reveal --id=ID — reveal the full API key for a given id
 
+
 Examples:
 
 ```bash
