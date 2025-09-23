@@ -6,7 +6,9 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Rdcstarr\EasyApi\Commands\EasyApiCommand;
+use Rdcstarr\EasyApi\Middleware\ApiDomainCheck;
 use Rdcstarr\EasyApi\Middleware\EasyApiMiddleware;
+use Rdcstarr\EasyApi\Middleware\WebDomainCheck;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -50,6 +52,10 @@ class EasyApiServiceProvider extends PackageServiceProvider
 	{
 		parent::boot();
 
+		// Register domain check middleware
+		$this->app['router']->aliasMiddleware('api-domain-check', ApiDomainCheck::class);
+		$this->app['router']->aliasMiddleware('web-domain-check', WebDomainCheck::class);
+
 		// Load migrations only in console (optimization)
 		if (app()->runningInConsole())
 		{
@@ -71,19 +77,16 @@ class EasyApiServiceProvider extends PackageServiceProvider
 
 	protected function api(): void
 	{
-		Route::middleware(self::$middlewareGroups['api'])
+		Route::middleware(['api-domain-check', ...self::$middlewareGroups['api']])
 			->withoutMiddleware('web')
-			->domain('api.{domain}')
-			->where(['domain' => self::$domainPatterns['api']])
+			->prefix('v1')
 			->name('api.')
 			->group(base_path('routes/api.php'));
 	}
 
 	protected function web(): void
 	{
-		Route::middleware(self::$middlewareGroups['web'])
-			->domain('{domain}')
-			->where(['domain' => self::$domainPatterns['web']])
+		Route::middleware(['web-domain-check', ...self::$middlewareGroups['web']])
 			->group(base_path('routes/web.php'));
 	}
 
