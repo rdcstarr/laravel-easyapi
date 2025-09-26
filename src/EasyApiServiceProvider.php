@@ -4,7 +4,6 @@ namespace Rdcstarr\EasyApi;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 use Rdcstarr\EasyApi\Commands\EasyApiCommand;
 use Rdcstarr\EasyApi\Middleware\ApiDomainCheck;
 use Rdcstarr\EasyApi\Middleware\EasyApiMiddleware;
