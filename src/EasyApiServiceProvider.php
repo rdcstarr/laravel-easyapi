@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Rdcstarr\EasyApi\Commands\EasyApiCommand;
 use Rdcstarr\EasyApi\Middleware\ApiDomainCheck;
 use Rdcstarr\EasyApi\Middleware\EasyApiMiddleware;
+use Rdcstarr\EasyApi\Middleware\NoCacheMiddleware;
 use Rdcstarr\EasyApi\Middleware\WebDomainCheck;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -25,7 +26,7 @@ class EasyApiServiceProvider extends PackageServiceProvider
 	 * Cached middleware arrays for better performance
 	 */
 	private static array $middlewareGroups = [
-		'api' => [EasyApiMiddleware::class],
+		'api' => [EasyApiMiddleware::class, NoCacheMiddleware::class],
 		'web' => ['web'],
 	];
 
