@@ -4,24 +4,15 @@ namespace Rdcstarr\EasyApi;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Rdcstarr\EasyApi\Commands\EasyApiCommand;
-use Rdcstarr\EasyApi\Middleware\ApiDomainCheck;
 use Rdcstarr\EasyApi\Middleware\EasyApiMiddleware;
 use Rdcstarr\EasyApi\Middleware\NoCacheMiddleware;
-use Rdcstarr\EasyApi\Middleware\WebDomainCheck;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class EasyApiServiceProvider extends PackageServiceProvider
 {
-	/**
-	 * Cached domain patterns for better performance
-	 */
-	private static array $domainPatterns = [
-		'api' => '[a-zA-Z0-9.-]+',
-		'web' => '(?!api\.)[a-zA-Z0-9.-]+',
-	];
-
 	/**
 	 * Cached middleware arrays for better performance
 	 */
@@ -52,10 +43,6 @@ class EasyApiServiceProvider extends PackageServiceProvider
 	{
 		parent::boot();
 
-		// Register domain check middleware
-		$this->app['router']->aliasMiddleware('api-domain-check', ApiDomainCheck::class);
-		$this->app['router']->aliasMiddleware('web-domain-check', WebDomainCheck::class);
-
 		// Load migrations only in console (optimization)
 		if (app()->runningInConsole())
 		{
@@ -77,17 +64,22 @@ class EasyApiServiceProvider extends PackageServiceProvider
 
 	protected function api(): void
 	{
-		Route::middleware(['api-domain-check', ...self::$middlewareGroups['api']])
+		Route::domain('api.' . $this->domain())
+			->middleware(self::$middlewareGroups['api'])
 			->withoutMiddleware('web')
-			->prefix('v1')
 			->name('api.')
 			->group(base_path('routes/api.php'));
 	}
 
 	protected function web(): void
 	{
-		Route::middleware(['web-domain-check', ...self::$middlewareGroups['web']])
+		Route::domain($this->domain())
+			->middleware(self::$middlewareGroups['web'])
 			->group(base_path('routes/web.php'));
 	}
 
+	protected function domain(): string
+	{
+		return once(fn() => Str::of(parse_url(config('app.url'), PHP_URL_HOST))->lower()->replaceStart('www.', '')->replaceStart('api.', '')->toString());
+	}
 }
