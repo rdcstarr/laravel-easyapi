@@ -26,7 +26,8 @@ class EasyApiServiceProvider extends PackageServiceProvider
 	{
 		$package
 			->name('laravel-easyapi')
-			->hasMigration('create_api_table')
+			->discoversMigrations()
+			->runsMigrations()
 			->hasCommands([
 				InstallEasyApiCommand::class,
 				EasyApiCommand::class,
