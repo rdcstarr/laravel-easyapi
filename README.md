@@ -42,7 +42,7 @@ Alternatively, you can install manually:
 1. Publish the migrations:
 
 ```bash
-php artisan vendor:publish --provider="Rdcstarr\EasyApi\EasyApiServiceProvider" --tag="laravel-easyapi-migrations"
+php artisan vendor:publish --tag=easyapi-migrations
 ```
 
 2. Run the migrations:

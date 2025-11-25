@@ -3,11 +3,11 @@
 if (!function_exists('easyApi'))
 {
 	/**
-	 * Get the EasyApi manager instance.
+	 * Get the EasyApi service instance.
 	 *
-	 * @return \Rdcstarr\EasyApi\EasyApiManager
+	 * @return \Rdcstarr\EasyApi\EasyApiService
 	 */
-	function easyApi(): \Rdcstarr\EasyApi\EasyApiManager
+	function easyApi(): \Rdcstarr\EasyApi\EasyApiService
 	{
 		return app('easyApi');
 	}

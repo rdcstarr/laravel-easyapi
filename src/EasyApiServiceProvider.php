@@ -6,9 +6,9 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Rdcstarr\EasyApi\Commands\EasyApiCommand;
-use Rdcstarr\EasyApi\Commands\InstallEasyApiCommand;
 use Rdcstarr\EasyApi\Middleware\EasyApiMiddleware;
 use Rdcstarr\EasyApi\Middleware\NoCacheMiddleware;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -22,6 +22,11 @@ class EasyApiServiceProvider extends PackageServiceProvider
 		'web' => ['web'],
 	];
 
+	/*
+	 * This class is a Package Service Provider
+	 *
+	 * More info: https://github.com/spatie/laravel-package-tools
+	 */
 	public function configurePackage(Package $package): void
 	{
 		$package
@@ -29,9 +34,14 @@ class EasyApiServiceProvider extends PackageServiceProvider
 			->discoversMigrations()
 			->runsMigrations()
 			->hasCommands([
-				InstallEasyApiCommand::class,
 				EasyApiCommand::class,
-			]);
+			])
+			->hasInstallCommand(function (InstallCommand $command)
+			{
+				$command
+					->publishMigrations()
+					->askToRunMigrations();
+			});
 	}
 
 	public function register(): void
