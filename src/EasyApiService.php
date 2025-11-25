@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Rdcstarr\EasyApi\Models\Api;
 use RuntimeException;
 
-class EasyApiManager
+class EasyApiService
 {
 	/**
 	 * Create a new API key.

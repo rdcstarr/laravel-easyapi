@@ -37,8 +37,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Rdcstarr\\EasyApi\\": "src/",
-			"Rdcstarr\\EasyApi\\Database\\Factories\\": "database/factories/"
+			"Rdcstarr\\EasyApi\\": "src/"
 		},
 		"files": [
 			"src/helpers.php"

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Rdcstarr\EasyApi\Commands\EasyApiCommand;
+use Rdcstarr\EasyApi\Commands\InstallEasyApiCommand;
 use Rdcstarr\EasyApi\Middleware\EasyApiMiddleware;
 use Rdcstarr\EasyApi\Middleware\NoCacheMiddleware;
 use Spatie\LaravelPackageTools\Package;
@@ -23,38 +24,26 @@ class EasyApiServiceProvider extends PackageServiceProvider
 
 	public function configurePackage(Package $package): void
 	{
-		/*
-		 * This class is a Package Service Provider
-		 *
-		 * More info: https://github.com/spatie/laravel-package-tools
-		 */
-		$package->name('easyapi')
-			->hasCommand(EasyApiCommand::class);
+		$package
+			->name('laravel-easyapi')
+			->hasMigration('create_api_table')
+			->hasCommands([
+				InstallEasyApiCommand::class,
+				EasyApiCommand::class,
+			]);
 	}
 
 	public function register(): void
 	{
 		parent::register();
 
-		$this->app->singleton('easyApi', EasyApiManager::class);
+		$this->app->singleton('easyApi', EasyApiService::class);
 	}
 
 	public function boot(): void
 	{
 		parent::boot();
 
-		// Load migrations only in console (optimization)
-		if (app()->runningInConsole())
-		{
-			$this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-
-			// Publish migrations only in console (optimization)
-			$this->publishes([
-				__DIR__ . '/../database/migrations' => database_path('migrations'),
-			], 'migrations');
-		}
-
-		// Register routes - always register both with different strategies
 		RouteServiceProvider::loadRoutesUsing(function ()
 		{
 			$this->api();

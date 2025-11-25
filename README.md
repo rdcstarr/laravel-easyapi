@@ -11,13 +11,13 @@
 
 ## ✨ Features
 
-- 🔑 API key management — generate, list, reveal and delete API keys via an artisan command or programmatically.
-- 🛡 Middleware protection — a lightweight middleware validates Bearer tokens on incoming requests.
-- 📈 Usage metrics — each key tracks an access count and API access is logged to `api_logs`.
-- 🔒 Secure keys — keys are generated using SHA-256 with unique identifiers to avoid collisions.
-- ⚙️ Facade & manager — programmatic API via the `EasyApi` facade or the `EasyApiManager` service.
-- 🧪 Test-friendly — models and factories included to make testing straightforward.
-- 📦 Migrations included — package ships migrations for `api` and `api_logs` tables and can be published.
+-   🔑 API key management — generate, list, reveal and delete API keys via an artisan command or programmatically.
+-   🛡 Middleware protection — a lightweight middleware validates Bearer tokens on incoming requests.
+-   📈 Usage metrics — each key tracks an access count and API access is logged to `api_logs`.
+-   🔒 Secure keys — keys are generated using SHA-256 with unique identifiers to avoid collisions.
+-   ⚙️ Facade & manager — programmatic API via the `EasyApi` facade or the `EasyApiManager` service.
+-   🧪 Test-friendly — models and factories included to make testing straightforward.
+-   📦 Migrations included — package ships migrations for `api` and `api_logs` tables and can be published.
 
 ---
 
@@ -27,14 +27,31 @@
 composer require rdcstarr/laravel-easyapi
 ```
 
-Publish the migrations (optional) and migrate:
+### Automatic Installation (Recommended)
+
+Run the install command to publish and run the migrations:
 
 ```bash
-php artisan vendor:publish --provider="Rdcstarr\EasyApi\EasyApiServiceProvider"
+php artisan easyapi:install
+```
+
+### Manual Installation
+
+Alternatively, you can install manually:
+
+1. Publish the migrations:
+
+```bash
+php artisan vendor:publish --provider="Rdcstarr\EasyApi\EasyApiServiceProvider" --tag="laravel-easyapi-migrations"
+```
+
+2. Run the migrations:
+
+```bash
 php artisan migrate
 ```
 
-The package registers a singleton manager and a console command. It will also load the package migrations and register route groups if you provide `routes/api.php` or `routes/web.php`.
+The package registers a singleton manager and console commands. It will also register route groups if you provide `routes/api.php` or `routes/web.php`.
 
 ## 🔑 Usage
 
@@ -56,7 +73,7 @@ EasyApi::deleteKey($fullKey);
 
 Middleware usage:
 
-- The package provides `Rdcstarr\EasyApi\Middleware\EasyApiMiddleware` which checks for a Bearer token and validates it against the `api` table. If valid, it logs the request and increments the access count.
+-   The package provides `Rdcstarr\EasyApi\Middleware\EasyApiMiddleware` which checks for a Bearer token and validates it against the `api` table. If valid, it logs the request and increments the access count.
 
 Apply it to a route or route group:
 
@@ -70,18 +87,17 @@ Route::middleware([\Rdcstarr\EasyApi\Middleware\EasyApiMiddleware::class])->grou
 
 Database schema:
 
-- `api` table: id, key (unique), access_count, timestamps
-- `api_logs` table: id, api_id, endpoint, ip_address, user_agent, timestamps
+-   `api` table: id, key (unique), access_count, timestamps
+-   `api_logs` table: id, api_id, endpoint, ip_address, user_agent, timestamps
 
 Artisan CLI:
 
 The package exposes a single console command: `php artisan easyapi` with the following actions:
 
-- generate — create a new API key
-- delete --key=KEY — delete an API key (confirmation required)
-- list — display stored API keys (masked) with access counts
-- reveal --id=ID — reveal the full API key for a given id
-
+-   generate — create a new API key
+-   delete --key=KEY — delete an API key (confirmation required)
+-   list — display stored API keys (masked) with access counts
+-   reveal --id=ID — reveal the full API key for a given id
 
 Examples:
 
@@ -94,8 +110,8 @@ php artisan easyapi reveal --id=1
 
 Notes:
 
-- Generated keys must be stored securely when created — the `generate` command shows the full key once.
-- The command output masks keys in listings for safety; use `reveal` to show the full value when necessary.
+-   Generated keys must be stored securely when created — the `generate` command shows the full key once.
+-   The command output masks keys in listings for safety; use `reveal` to show the full value when necessary.
 
 ## 🧪 Testing
 
@@ -108,10 +124,13 @@ composer test
 The package provides models (`Api`, `ApiLog`) and factories to make writing tests simpler.
 
 ## 📖 Resources
- - [Changelog](CHANGELOG.md) for more information on what has changed recently.
+
+-   [Changelog](CHANGELOG.md) for more information on what has changed recently.
 
 ## 👥 Credits
- - [Rdcstarr](https://github.com/rdcstarr)
+
+-   [Rdcstarr](https://github.com/rdcstarr)
 
 ## 📜 License
- - [License](LICENSE.md) for more information.
+
+-   [License](LICENSE.md) for more information.
